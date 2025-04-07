@@ -5,34 +5,67 @@ import os
 
 app = Flask(__name__, template_folder=".")
 
+
 client = MongoClient("mongodb+srv://opolo4847:moips103@cluster0.ikaskks.mongodb.net/")
 db = client["coffeeDB"]
 collection = db["Test"]
+
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
+
 @app.route('/data', methods=['GET'])
-def get_data_by_khu_vuc():
+def get_data():
+    query = {}
+    
+    # Lấy tham số khu_vuc
     khu_vuc = request.args.get('khu_vuc')
-    if not khu_vuc:
-        return jsonify({"error": "Thiếu tên khu vực"}), 400
+    if khu_vuc and khu_vuc.strip() != "":
+        query['khu_vuc'] = khu_vuc.strip()
+    
+    # Lấy tham số chi_phi_thue
+    chi_phi_thue = request.args.get('chi_phi_thue')
+    if chi_phi_thue and chi_phi_thue.strip() != "":
+        try:
+            query['chi_phi_thue'] = float(chi_phi_thue)
+        except ValueError:
+            return jsonify({"error": "Giá trị chi_phi_thue không hợp lệ"}), 400
 
-    data = collection.find_one({"khu_vuc": khu_vuc})
-    if not data:
-        return jsonify({"error": "Không tìm thấy khu vực"}), 404
+    # Lấy tham số muc_thu_nhap_tb
+    muc_thu_nhap_tb = request.args.get('muc_thu_nhap_tb')
+    if muc_thu_nhap_tb and muc_thu_nhap_tb.strip() != "":
+        try:
+            query['muc_thu_nhap_tb'] = float(muc_thu_nhap_tb)
+        except ValueError:
+            return jsonify({"error": "Giá trị muc_thu_nhap_tb không hợp lệ"}), 400
+
+    # Lấy tham số dien_tich_tb
+    dien_tich_tb = request.args.get('dien_tich_tb')
+    if dien_tich_tb and dien_tich_tb.strip() != "":
+        try:
+            query['dien_tich_tb'] = float(dien_tich_tb)
+        except ValueError:
+            return jsonify({"error": "Giá trị dien_tich_tb không hợp lệ"}), 400
 
 
-    data["_id"] = str(data["_id"])
-    for key, value in data.items():
-        if isinstance(value, Decimal128):
-            data[key] = float(value.to_decimal())
+    docs_cursor = collection.find(query)
+    results = []
+    for doc in docs_cursor:
+        doc["_id"] = str(doc["_id"])
+        for key, value in doc.items():
+            if isinstance(value, Decimal128):
+                doc[key] = float(value.to_decimal())
 
-    if "imageURL" in data:
-        data["imageURL"] = os.path.basename(data["imageURL"])
+        if "imageURL" in doc:
+            doc["imageURL"] = os.path.basename(doc["imageURL"])
+        results.append(doc)
+    
+    if not results:
+        return jsonify({"error": "Không tìm thấy document nào"}), 404
 
-    return jsonify(data)
+    return jsonify(results)
 
 @app.route('/images/<path:filename>')
 def serve_image(filename):
