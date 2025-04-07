@@ -8,7 +8,7 @@ collection = db["Khu_Vuc"]
 
 cursor = collection.find({})
 data = list(cursor)
-
+ 
 for doc in data:
     doc["_id"] = str(doc["_id"])
     if "chi_phi_thue" in doc and isinstance(doc["chi_phi_thue"], Decimal128):

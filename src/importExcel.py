@@ -9,7 +9,7 @@ collection = db["Test"]
 
 df = pd.read_excel("AHP_Coffee_Data.xlsx")
 
-data = df.to_dict(orient="records")
+data = df.to_dict(orient="records") 
 
 def convert_doc(doc):
     if "chi_phi_thue" in doc:

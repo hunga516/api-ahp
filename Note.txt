@@ -4,7 +4,7 @@ from bson.decimal128 import Decimal128
 client = MongoClient("mongodb+srv://opolo4847:moips103@cluster0.ikaskks.mongodb.net/")
 db = client["coffeeDB"]
 collection = db["Khu_Vuc"]
-
+ 
 data = [
     {
         "khu_vuc": "Gần Chợ Bến Thành",

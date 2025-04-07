@@ -14,7 +14,7 @@ def get_data():
 
     price_param = request.args.get('price')
     if price_param:
-        try:
+        try: 
             price = float(price_param)
             query["chi_phi_thue"] = price
         except ValueError:
