@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết khu vực</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Thông tin khu vực</h1>
+    <label for="khuVucInput">Nhập tên khu vực:</label>
+    <input type="text" id="khuVucInput" placeholder="Ví dụ: Gần Chợ Bến Thành">
+    <button id="searchBtn">Tìm</button>
+
+    <div id="info" style="margin-top: 20px;"></div>
+
+    <script>
+        $(document).ready(function(){
+            $("#searchBtn").click(function(){
+                var khu_vuc = $("#khuVucInput").val().trim();
+                if(!khu_vuc){
+                    $("#info").html('<p style="color:red;">Nhập tên khu vực.</p>');
+                    return;
+                }
+
+                $.ajax({
+                    url: "/data?khu_vuc=" + encodeURIComponent(khu_vuc),
+                    method: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        if(data.error){
+                            $("#info").html('<p style="color:red;">' + data.error + '</p>');
+                            return;
+                        }
+
+                        var imageUrl = data.imageURL ? "/images/" + data.imageURL : "";
+
+                        var htmlContent = `
+                            <p><strong>Khu vực:</strong> ${data.khu_vuc || 'N/A'}</p>
+                            <p><strong>Quận:</strong> ${data.quan || 'N/A'}</p>
+                            <p><strong>Chi phí thuê:</strong> ${data.chi_phi_thue ? parseFloat(data.chi_phi_thue).toLocaleString() : 'N/A'} VND</p>
+                            <p><strong>Mật độ dân cư:</strong> ${data.mat_do_dan_cu ? parseFloat(data.mat_do_dan_cu).toLocaleString() : 'N/A'} người/km²</p>
+                            <p><strong>Thu nhập TB:</strong> ${data.muc_thu_nhap_tb ? parseFloat(data.muc_thu_nhap_tb).toLocaleString() : 'N/A'} VND</p>
+                            <p><strong>Diện tích TB:</strong> ${data.dien_tich_tb || 'N/A'} m²</p>
+                            <p><strong>Số quán cafe:</strong> ${data.so_luong_quan_cafe || 'N/A'}</p>
+                            <p><strong>Lượng khách TB/ngày:</strong> ${data.luong_khach_tb_ngay || 'N/A'}</p>
+                            <p><strong>Quy hoạch:</strong> ${data.quy_hoach_do_thi || 'N/A'}</p>
+                        `;
+
+                        if(imageUrl){
+                            htmlContent += `<img src="${imageUrl}" alt="Ảnh khu vực" style="width: 300px; margin-top: 10px; border: 1px solid #ccc;">`;
+                        }
+
+                        $("#info").html(htmlContent);
+                    },
+                    error: function() {
+                        $("#info").html('<p style="color:red;">Không tìm thấy khu vực.</p>');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
