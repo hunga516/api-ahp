@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from pymongo import MongoClient
 from bson.decimal128 import Decimal128
-from bson import ObjectId  # Import ObjectId
+from bson import ObjectId 
 
 # Kết nối MongoDB
 client = MongoClient("mongodb+srv://opolo4847:moips103@cluster0.ikaskks.mongodb.net/")
