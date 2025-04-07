@@ -2,26 +2,26 @@
     "version": 2,
     "builds": [
       {
-        "src": "src/app.py",
+        "src": "AHP_COFFEE/src/QueryImg.py",
         "use": "@vercel/python"
       },
       {
-        "src": "src/images/**",
+        "src": "AHP_COFFEE/src/images/**",
         "use": "@vercel/static"
       },
       {
-        "src": "src/index.html",
+        "src": "AHP_COFFEE/src/index.html",
         "use": "@vercel/static"
       }
     ],
     "routes": [
       {
         "src": "/images/(.*)",
-        "dest": "/src/images/$1"
+        "dest": "AHP_COFFEE/src/images/$1"
       },
       {
         "src": "/(.*)",
-        "dest": "/src/app.py"
+        "dest": "AHP_COFFEE/src/QueryImg.py"
       }
     ]
   }
