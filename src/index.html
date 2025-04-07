@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -103,6 +103,119 @@
                 performSearch(url);
             });
             
+            
+            $("#listAllBtn").click(function(){
+                performSearch("/data");
+            });
+        });
+    </script>
+</body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách khu vực</title>
+    <!-- Nhúng jQuery từ CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        .result-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        img {
+            max-width: 300px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Danh sách khu vực</h1>
+    
+    <label for="khuVucInput">Nhập tên khu vực:</label>
+    <input type="text" id="khuVucInput" placeholder="Ví dụ: Gần Chợ Bến Thành"><br><br>
+    
+    <label for="chiPhiThueInput">Nhập chi phí thuê:</label>
+    <input type="text" id="chiPhiThueInput" placeholder="Ví dụ: 50000000"><br><br>
+    
+    <label for="mucThuNhapInput">Nhập thu nhập TB:</label>
+    <input type="text" id="mucThuNhapInput" placeholder="Ví dụ: 20000000"><br><br>
+    
+    <label for="dienTichInput">Nhập diện tích TB:</label>
+    <input type="text" id="dienTichInput" placeholder="Ví dụ: 50"><br><br>
+    
+    <button id="searchBtn">Tìm theo điều kiện</button>
+    <button id="listAllBtn">Liệt kê tất cả</button>
+
+    <div id="info" style="margin-top: 20px;"></div>
+
+    <script>
+        $(document).ready(function(){
+            function performSearch(url) {
+                $.ajax({
+                    url: url,
+                    method: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        if(data.error){
+                            $("#info").html('<p style="color:red;">' + data.error + '</p>');
+                            return;
+                        }
+                        
+                        var htmlContent = "";
+                        for(var i = 0; i < data.length; i++){
+                            var item = data[i];
+                            var imageUrl = item.imageURL ? "/images/" + item.imageURL : "";
+                            
+                            htmlContent += `<div class="result-item">`;
+                            htmlContent += `<p><strong>Khu vực:</strong> ${item.khu_vuc || 'N/A'}</p>`;
+                            htmlContent += `<p><strong>Quận:</strong> ${item.quan || 'N/A'}</p>`;
+                            htmlContent += `<p><strong>Chi phí thuê:</strong> ${item.chi_phi_thue ? parseFloat(item.chi_phi_thue).toLocaleString() : 'N/A'} VND</p>`;
+                            htmlContent += `<p><strong>Mật độ dân cư:</strong> ${item.mat_do_dan_cu ? parseFloat(item.mat_do_dan_cu).toLocaleString() : 'N/A'} người/km²</p>`;
+                            htmlContent += `<p><strong>Thu nhập TB:</strong> ${item.muc_thu_nhap_tb ? parseFloat(item.muc_thu_nhap_tb).toLocaleString() : 'N/A'} VND</p>`;
+                            htmlContent += `<p><strong>Diện tích TB:</strong> ${item.dien_tich_tb || 'N/A'} m²</p>`;
+                            htmlContent += `<p><strong>Số quán cafe:</strong> ${item.so_luong_quan_cafe || 'N/A'}</p>`;
+                            htmlContent += `<p><strong>Lượng khách TB/ngày:</strong> ${item.luong_khach_tb_ngay || 'N/A'}</p>`;
+                            htmlContent += `<p><strong>Quy hoạch:</strong> ${item.quy_hoach_do_thi || 'N/A'}</p>`;
+                            if(imageUrl){
+                                htmlContent += `<img src="${imageUrl}" alt="Ảnh khu vực">`;
+                            }
+                            htmlContent += `</div>`;
+                        }
+                        $("#info").html(htmlContent);
+                    },
+                    error: function() {
+                        $("#info").html('<p style="color:red;">Không tìm thấy document nào thỏa điều kiện.</p>');
+                    }
+                });
+            }
+            
+            $("#searchBtn").click(function(){
+                var khu_vuc = $("#khuVucInput").val().trim();
+                var chi_phi_thue = $("#chiPhiThueInput").val().trim();
+                var muc_thu_nhap_tb = $("#mucThuNhapInput").val().trim();
+                var dien_tich_tb = $("#dienTichInput").val().trim();
+                
+                var url = "/data?";
+                if(khu_vuc) {
+                    url += "khu_vuc=" + encodeURIComponent(khu_vuc) + "&";
+                }
+                if(chi_phi_thue) {
+                    url += "chi_phi_thue=" + encodeURIComponent(chi_phi_thue) + "&";
+                }
+                if(muc_thu_nhap_tb) {
+                    url += "muc_thu_nhap_tb=" + encodeURIComponent(muc_thu_nhap_tb) + "&";
+                }
+                if(dien_tich_tb) {
+                    url += "dien_tich_tb=" + encodeURIComponent(dien_tich_tb) + "&";
+                }
+                performSearch(url);
+            });
             
             $("#listAllBtn").click(function(){
                 performSearch("/data");
