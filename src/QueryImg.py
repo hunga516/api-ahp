@@ -58,7 +58,12 @@ def get_data():
             if isinstance(value, Decimal128):
                 doc[key] = float(value.to_decimal())
 
+        # if "imageURL" in doc:
+        #     doc["imageURL"] = os.path.basename(doc["imageURL"])
+        # results.append(doc)
+        
         if "imageURL" in doc:
+            doc["imageURL"] = doc["imageURL"].replace("\\", "/")
             doc["imageURL"] = os.path.basename(doc["imageURL"])
         results.append(doc)
     
